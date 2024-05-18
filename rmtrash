@@ -1,0 +1,39 @@
+#!/bin/bash 
+
+count=0
+file="$1"
+
+# Использование переменной окружения $USER для определения пути к домашней директории
+pth="/home/$USER"
+
+if [[ $# -ne 1 ]]
+then
+    echo "RMTRASH can only accept one parameter."
+    exit
+elif [[(-f "$PWD/$file") ]]
+then
+    echo "File '$file' not exists in this directory."
+    exit
+fi
+
+if [[(-d "$pth/.trash") ]] 
+then 
+    mkdir "$pth/.trash" 
+fi 
+
+echo "'$file'"
+if [[ -f $pth/.trash/$file ]] 
+then
+    while [[ -f $pth/.trash/$file"_"$count ]]
+    do
+        let count+=1
+    done
+
+    ln -T "$file" "$pth/.trash/$file_$count"
+    echo "$PWD/ $file_$count" >> $pth/.trash.log
+else 
+    ln -T "$file" "$pth/.trash/$file"    
+    echo "$PWD/ $file" >> $pth/.trash.log
+fi
+
+rm -rf "$file"
