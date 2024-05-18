@@ -3,16 +3,19 @@
 count=0
 file="$1"
 
-# Использование переменной окружения $USER для определения пути к домашней директории
-pth="/home/$USER"
+# Использование realpath для преобразования относительных путей в абсолютные
+file=$(realpath "$file")
+
+# Исправлено использование абсолютного пути к домашней директории
+pth="/home/timofey"
 
 if [[ $# -ne 1 ]]
 then
-    echo "RMTRASH can only accept one parameter."
+    echo "rmtrash can accept only one parameter"
     exit
-elif [[(-f "$PWD/$file") ]]
+elif [[(-f "$file") ]]
 then
-    echo "File '$file' not exists in this directory."
+    echo "file '$file' does not exist"
     exit
 fi
 
