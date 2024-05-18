@@ -2,41 +2,36 @@
 
 count=0
 file="$1"
-
-# Использование realpath для преобразования относительных путей в абсолютные
-file=$(realpath "$file")
-
-# Исправлено использование абсолютного пути к домашней директории
-pth="/home/timofey"
-
+pth="$HOME/home"
+ 
 if [[ $# -ne 1 ]]
 then
-    echo "rmtrash can accept only one parameter"
-    exit
-elif [[(-f "$file") ]]
+	echo "rmtrash can accept only one parameter"
+	exit
+elif [[ !(-f "$PWD/$file") ]]
 then
-    echo "file '$file' does not exist"
-    exit
+	echo "file '$file' not exists in this directory"
+	exit
 fi
 
-if [[(-d "$pth/.trash") ]] 
+if [[ !(-d "$pth/.trash") ]] 
 then 
-    mkdir "$pth/.trash" 
+	mkdir "$pth/.trash" 
 fi 
 
 echo "'$file'"
 if [[ -f $pth/.trash/$file ]] 
 then
-    while [[ -f $pth/.trash/$file"_"$count ]]
-    do
-        let count+=1
-    done
+	while [[ -f $pth/.trash/$file"_"$count ]]
+	do
+		let count+=1
+	done
 
-    ln -T "$file" "$pth/.trash/$file_$count"
-    echo "$PWD/ $file_$count" >> $pth/.trash.log
+	ln -T "$file" "$pth/.trash/$file_$count"
+	echo "$PWD/ $file_$count" >> $pth/.trash.log
 else 
-    ln -T "$file" "$pth/.trash/$file"    
-    echo "$PWD/ $file" >> $pth/.trash.log
+	ln -T "$file" "$pth/.trash/$file"	
+	echo "$PWD/ $file" >> $pth/.trash.log
 fi
 
 rm -rf "$file"
