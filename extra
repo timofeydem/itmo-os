@@ -1,0 +1,37 @@
+#!/bin/bash
+
+MEMORY_HISTORY_DIR="/path/to/memory/history"
+
+mkdir -p "$MEMORY_HISTORY_DIR"
+
+collect_memory_usage() {
+    ps aux --sort=-%mem | awk '{print $6, $11}' > /tmp/processes.txt
+    
+    while read mem process; do
+        if [[! -f "$MEMORY_HISTORY_DIR/$process" ]]; then
+            echo "0" > "$MEMORY_HISTORY_DIR/$process"
+        fi
+        
+        echo "$mem" >> "$MEMORY_HISTORY_DIR/$process"
+    done < /tmp/processes.txt
+}
+
+display_statistics() {
+    echo "Process Name       Memory Usage History"
+    echo "--------------------------------------------------"
+    
+    for file in "$MEMORY_HISTORY_DIR"/*; do
+        process_name=$(basename "$file")
+        memory_history=$(cat "$file")
+        
+        echo -e "${process_name}\t${memory_history}"
+    done
+}
+
+if [[ $# -eq 0 ]]; then
+    collect_memory_usage
+elif [[ $1 == "--stats" ]]; then
+    display_statistics
+else
+    echo "Unknown command. Use --stats to display statistics."
+fi
