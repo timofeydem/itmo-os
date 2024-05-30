@@ -1,0 +1,41 @@
+#!/bin/bash
+
+N=1000000
+
+# Количество запусков
+K=10
+
+for ((i=1;i<=K;i++)); do
+   ./newmem.bash $N
+    sleep 1
+done
+
+
+#!/bin/bash
+
+collect_memory_usage() {
+    local pidlist=$(pgrep -f.)
+    for pid in $pidlist; do
+        local pname=$(ps -p $pid -o comm=)
+        local pmem=$(ps -p $pid -o rss= | awk '{hr=$1/1024; printf "%.2f\n", hr}')
+        echo "$pmem" >> "./${pname}_memory_history.txt"
+    done
+}
+
+show_stats() {
+    for file in *_memory_history.txt; do
+        local pname=${file%_memory_history.txt}
+        echo "Process: $pname"
+        cat "$file"
+        echo ""
+    done
+}
+
+case $1 in
+    "--stats")
+        show_stats
+        ;;
+    *)
+        collect_memory_usage
+        ;;
+esac
