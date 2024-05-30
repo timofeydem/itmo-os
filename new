@@ -1,0 +1,25 @@
+#!/bin/bash
+
+if [ "$#" -ne 1 ]; then
+    echo "Usage: $0 N"
+    exit 1
+fi
+
+N=$1
+
+declare -a array=()
+counter=0
+
+while true; do
+    for i in {1..10}; do
+        array+=($i)
+    done
+    
+    ((counter++))
+    
+    # Проверяем, не превысил ли размер массива значение N
+    if [ "${#array[@]}" -ge "$N" ]; then
+        echo "Size of array exceeded N."
+        break
+    fi
+done
